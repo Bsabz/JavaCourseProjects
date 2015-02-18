@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<level image="Old West.png" name="Old West2">
+     <intersections>
+          <intersection id="0" open="true" x="35" y="212"/>
+          <intersection id="0" open="true" x="931" y="646"/>
+          <intersection id="0" open="true" x="251" y="158"/>
+          <intersection id="0" open="true" x="440" y="235"/>
+          <intersection id="0" open="false" x="531" y="302"/>
+          <intersection id="0" open="true" x="669" y="364"/>
+          <intersection id="0" open="true" x="774" y="438"/>
+          <intersection id="0" open="true" x="170" y="255"/>
+          <intersection id="0" open="true" x="76" y="402"/>
+          <intersection id="0" open="false" x="159" y="472"/>
+          <intersection id="0" open="true" x="257" y="333"/>
+          <intersection id="0" open="true" x="258" y="513"/>
+          <intersection id="0" open="true" x="439" y="415"/>
+          <intersection id="0" open="false" x="385" y="570"/>
+          <intersection id="0" open="false" x="510" y="485"/>
+          <intersection id="0" open="true" x="535" y="639"/>
+          <intersection id="0" open="true" x="676" y="564"/>
+     </intersections>
+     <roads>
+          <road int_id1="0" int_id2="8" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="7" one_way="false" speed_limit="30"/>
+          <road int_id1="7" int_id2="2" one_way="false" speed_limit="30"/>
+          <road int_id1="2" int_id2="3" one_way="false" speed_limit="30"/>
+          <road int_id1="3" int_id2="4" one_way="false" speed_limit="30"/>
+          <road int_id1="4" int_id2="5" one_way="false" speed_limit="30"/>
+          <road int_id1="5" int_id2="6" one_way="false" speed_limit="30"/>
+          <road int_id1="6" int_id2="12" one_way="false" speed_limit="30"/>
+          <road int_id1="12" int_id2="12" one_way="false" speed_limit="30"/>
+          <road int_id1="6" int_id2="16" one_way="false" speed_limit="30"/>
+          <road int_id1="16" int_id2="14" one_way="false" speed_limit="30"/>
+          <road int_id1="14" int_id2="12" one_way="false" speed_limit="30"/>
+          <road int_id1="5" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="12" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="2" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="12" int_id2="9" one_way="false" speed_limit="30"/>
+          <road int_id1="9" int_id2="11" one_way="false" speed_limit="30"/>
+          <road int_id1="11" int_id2="13" one_way="false" speed_limit="10"/>
+          <road int_id1="13" int_id2="15" one_way="false" speed_limit="30"/>
+          <road int_id1="15" int_id2="1" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="9" one_way="false" speed_limit="10"/>
+          <road int_id1="3" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="16" int_id2="15" one_way="false" speed_limit="30"/>
+          <road int_id1="0" int_id2="2" one_way="false" speed_limit="30"/>
+     </roads>
+     <start_intersection id="0" image="DefaultStartLocation.png"/>
+     <destination_intersection id="1" image="DefaultDestination.png"/>
+     <money amount="300"/>
+     <police num="0"/>
+     <bandits num="3"/>
+     <zombies num="3"/>
+</level>

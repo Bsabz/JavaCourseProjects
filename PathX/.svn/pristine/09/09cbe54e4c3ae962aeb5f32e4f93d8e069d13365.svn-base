@@ -1,0 +1,277 @@
+package pathx.data;
+
+import java.awt.Graphics;
+//import pathx.ui.SortingHatTile;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import pathx.PathX.PathXPropertyType;
+import mini_game.MiniGame;
+import mini_game.MiniGameDataModel;
+import mini_game.SpriteType;
+import properties_manager.PropertiesManager;
+import static pathx.PathXConstants.*;
+import pathx.ui.PathXMiniGame;
+import pathx.ui.PathXPanel;
+import pathx.ui.PathXState;
+
+/**
+ * This class manages the game data for PathX.
+ * 
+ * @author Brian Sabz
+ */
+public class PathXDataModel extends MiniGameDataModel{
+
+    // THIS CLASS HAS A REFERERENCE TO THE MINI GAME SO THAT IT
+    // CAN NOTIFY IT TO UPDATE THE DISPLAY WHEN THE DATA MODEL CHANGES
+    private MiniGame miniGame;
+    
+    
+    // GAME GRID AND TILE DATA
+    private int numGameGridColumns;
+    private int numGameGridRows;
+    
+     // THESE ARE USED FOR TIMING THE GAME
+    private GregorianCalendar startTime;
+    private GregorianCalendar endTime;
+
+    // LEVEL
+    private String currentLevel;
+    
+    private int balance;
+    private int goal;
+    /*private ArrayList<String> moneyEarned;
+    private ArrayList<String> levelName;*/
+    private int moneyEarned = 200;
+    private String levelName = "San Diego, Cali";
+    
+    
+    /**
+     * Constructor for initializing this data model, it will create the data
+     * structures for storing tiles, but not the tile grid itself, that is
+     * dependent on file loading, and so should be subsequently initialized.
+     *
+     * @param initMiniGame PathX game UI.
+     */
+    public PathXDataModel(MiniGame initMiniGame)
+    {
+        // KEEP THE GAME FOR LATER
+        miniGame = initMiniGame;
+        
+        /*balance = 0;
+        goal = 0;
+        levelName = new ArrayList<String>();
+        moneyEarned = new ArrayList<String>();
+        
+        // INIT THESE FOR HOLDING MATCHED AND MOVING TILES
+        stackTiles = new ArrayList();
+        movingTiles = new ArrayList();
+        tilesToSort = new ArrayList();
+
+        // NOTHING IS BEING DRAGGED YET
+        selectedTile = null;
+        selectedTileIndex = -1;
+        tempTile = null;*/
+    }
+    
+     // ACCESSOR METHODS
+     public int getNumGameGridColumns()
+    {
+        return numGameGridColumns;
+    }
+
+    public int getNumGameGridRows()
+    {
+        return numGameGridRows;
+    }
+    
+    public String getCurrentLevel()
+    {
+        return currentLevel;
+    }
+    
+    // MUTATOR METHODS
+    public void setCurrentLevel(String initCurrentLevel)
+    {
+        currentLevel = initCurrentLevel;
+    }
+    
+    // INIT METHODS - AFTER CONSTRUCTION, THESE METHODS SETUP A GAME FOR USE
+    // - initLevel
+    // - initTiles
+    // - initTile
+    /**
+     * Called after a level has been selected, it initializes the grid so that
+     * it is the proper dimensions.
+     */
+    public void initLevel(String levelName)
+    {
+        /* KEEP THE TILE ORDER AND SORTING ALGORITHM FOR LATER
+        snake = initSnake;
+        sortingAlgorithm = initSortingAlgorithm;*/
+
+        // UPDATE THE VIEWPORT IF WE ARE SCROLLING (WHICH WE'RE NOT)
+        viewport.updateViewportBoundaries();
+
+        /* INITIALIZE THE PLAYER RECORD IF NECESSARY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IT IS NECESSARY
+        PathXRecord playerRecord = ((PathXMiniGame) miniGame).getPlayerRecord();
+        if (!playerRecord.hasLevel(levelName))
+        {
+            playerRecord.addLevel(levelName, initSortingAlgorithm.name);
+        }*/
+    }
+    
+    /**
+     * Used to calculate the x-axis pixel location in the game grid for a tile
+     * placed at column with stack position z.
+     *
+     * @param column The column in the grid the tile is located.
+     *
+     * @return The x-axis pixel location of the tile
+     */
+    public int calculateGridTileX(int column)
+    {
+        return viewport.getViewportMarginLeft() + (column * TILE_WIDTH) - viewport.getViewportX();
+    }
+
+    /**
+     * Used to calculate the y-axis pixel location in the game grid for a tile
+     * placed at row.
+     *
+     * @param row The row in the grid the tile is located.
+     *
+     * @return The y-axis pixel location of the tile
+     */
+    public int calculateGridTileY(int row)
+    {
+        return viewport.getViewportMarginTop() + (row * TILE_HEIGHT) - viewport.getViewportY();
+    }
+
+    /**
+     * Used to calculate the grid column for the x-axis pixel location.
+     *
+     * @param x The x-axis pixel location for the request.
+     *
+     * @return The column that corresponds to the x-axis location x.
+     */
+    public int calculateGridCellColumn(int x)
+    {
+        // ADJUST FOR THE MARGIN
+        x -= viewport.getViewportMarginLeft();
+
+        // ADJUST FOR THE VIEWPORT
+        x = x + viewport.getViewportX();
+
+        if (x < 0)
+        {
+            return -1;
+        }
+
+        // AND NOW GET THE COLUMN
+        return x / TILE_WIDTH;
+    }
+
+    /**
+     * Used to calculate the grid row for the y-axis pixel location.
+     *
+     * @param y The y-axis pixel location for the request.
+     *
+     * @return The row that corresponds to the y-axis location y.
+     */
+    public int calculateGridCellRow(int y)
+    {
+        // ADJUST FOR THE MARGIN
+        y -= viewport.getViewportMarginTop();
+
+        // ADJUST FOR THE VIEWPORT
+        y = y + viewport.getViewportY();
+
+        if (y < 0)
+        {
+            return -1;
+        }
+
+        // AND NOW GET THE ROW
+        return y / TILE_HEIGHT;
+    }
+    
+    @Override
+    public void checkMousePressOnSprites(MiniGame game, int x, int y) {
+      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void reset(MiniGame game) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateAll(MiniGame game) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateDebugText(MiniGame game) {
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the balance
+     */
+    public int getBalance() {
+        return balance;
+    }
+
+    /**
+     * @param balance the balance to set
+     */
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    /**
+     * @return the goal
+     */
+    public int getGoal() {
+        return goal;
+    }
+
+    /**
+     * @param goal the goal to set
+     */
+    public void setGoal(int goal) {
+        this.goal = goal;
+    }
+
+    /**
+     * @return the moneyEarned
+     */
+    public int getMoneyEarned() {
+        return moneyEarned;
+    }
+
+    /**
+     * @param moneyEarned the moneyEarned to set
+     */
+    public void setMoneyEarned(int moneyEarned) {
+        this.moneyEarned = moneyEarned;
+    }
+
+    /**
+     * @return the levelName
+     */
+    public String getLevelName() {
+        return levelName;
+    }
+
+    /**
+     * @param levelName the levelName to set
+     */
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
+    }
+    
+    
+}

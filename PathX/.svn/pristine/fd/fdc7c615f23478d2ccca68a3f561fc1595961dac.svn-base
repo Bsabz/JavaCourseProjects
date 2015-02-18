@@ -1,0 +1,765 @@
+package pathx.ui;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import mini_game.MiniGame;
+import mini_game.Sprite;
+import mini_game.SpriteType;
+import mini_game.Viewport;
+import properties_manager.PropertiesManager;
+import pathx.data.PathXDataModel;
+import static pathx.PathXConstants.*;
+import pathx.PathX.PathXPropertyType;
+import pathx.data.Intersection;
+import pathx.data.PathXRecord;
+import pathx.data.Road;
+
+/**
+ *
+ * This class performs all of the rendering for the PathX game application.
+ *
+ * @author Brian Sabz
+ */
+public class PathXPanel extends JPanel {
+
+    // THIS IS ACTUALLY OUR Sorting Hat APP, WE NEED THIS
+    // BECAUSE IT HAS THE GUI STUFF THAT WE NEED TO RENDER
+    private MiniGame game;
+
+    // AND HERE IS ALL THE GAME DATA THAT WE NEED TO RENDER
+    private PathXDataModel data;
+
+    // MANAGES PORTION OF LEVEL TO RENDER
+    Viewport viewport;
+
+    // WE'LL RECYCLE THESE DURING RENDERING
+    Ellipse2D.Double recyclableCircle;
+    Line2D.Double recyclableLine;
+    HashMap<Integer, BasicStroke> recyclableStrokes;
+    int triangleXPoints[] = {-ONE_WAY_TRIANGLE_WIDTH / 2, -ONE_WAY_TRIANGLE_WIDTH / 2, ONE_WAY_TRIANGLE_WIDTH / 2};
+    int triangleYPoints[] = {ONE_WAY_TRIANGLE_WIDTH / 2, -ONE_WAY_TRIANGLE_WIDTH / 2, 0};
+    GeneralPath recyclableTriangle;
+
+    // WE'LL USE THIS TO FORMAT SOME TEXT FOR DISPLAY PURPOSES
+    private NumberFormat numberFormatter;
+
+    // WE'LL USE THIS AS THE BASE IMAGE FOR RENDERING UNSELECTED ITEMS
+    private BufferedImage blankImage;
+
+    // WE'LL USE THIS AS THE BASE IMAGE FOR RENDERING SELECTED ITEMS
+    private BufferedImage blankSelectedImage;
+
+    // THIS IS FOR WHEN THE USE MOUSES OVER A ITEM
+    private BufferedImage blankMouseOverImage;
+
+    private JFrame window;
+
+    PropertiesManager props = PropertiesManager.getPropertiesManager();
+    String imgPath = props.getProperty(PathXPropertyType.PATH_IMG);
+
+    /**
+     * This constructor stores the game and data references, which we'll need
+     * for rendering.
+     *
+     * @param initGame The Sorting Hat game that is using this panel for
+     * rendering.
+     *
+     * @param initData The Sorting Hat game data.
+     */
+    public PathXPanel(MiniGame initGame, PathXDataModel initData) {
+        game = initGame;
+        data = initData;
+//        viewport = data.getViewport();
+//        numberFormatter = NumberFormat.getNumberInstance();
+//        numberFormatter.setMinimumFractionDigits(3);
+//        numberFormatter.setMaximumFractionDigits(3);
+
+        // MAKE THE RENDER OBJECTS TO BE RECYCLED
+        recyclableCircle = new Ellipse2D.Double(0, 0, INTERSECTION_RADIUS * 2, INTERSECTION_RADIUS * 2);
+        recyclableLine = new Line2D.Double(0, 0, 0, 0);
+        recyclableStrokes = new HashMap();
+        for (int i = 1; i <= 10; i++) {
+            recyclableStrokes.put(i, new BasicStroke(i * 2));
+        }
+
+        // MAKING THE TRIANGLE FOR ONE WAY STREETS IS A LITTLE MORE INVOLVED
+        recyclableTriangle = new GeneralPath(GeneralPath.WIND_EVEN_ODD,
+                triangleXPoints.length);
+        recyclableTriangle.moveTo(triangleXPoints[0], triangleYPoints[0]);
+        for (int index = 1; index < triangleXPoints.length; index++) {
+            recyclableTriangle.lineTo(triangleXPoints[index], triangleYPoints[index]);
+        };
+        recyclableTriangle.closePath();
+    }
+
+    // MUTATOR METHODS
+    // -setBlankTileImage
+    // -setBlankTileSelectedImage
+    /**
+     * This mutator method sets the base image to use for rendering tiles.
+     *
+     * @param initBlankTileImage The image to use as the base for rendering
+     * tiles.
+     */
+    public void setBlankImage(BufferedImage initBlankTileImage) {
+        blankImage = initBlankTileImage;
+    }
+
+    /**
+     * This mutator method sets the base image to use for rendering selected
+     * tiles.
+     *
+     * @param initBlankTileSelectedImage The image to use as the base for
+     * rendering selected tiles.
+     */
+    public void setBlankTileSelectedImage(BufferedImage initBlankTileSelectedImage) {
+        blankSelectedImage = initBlankTileSelectedImage;
+    }
+
+    public void setBlankTileMouseOverImage(BufferedImage initBlankTileMouseOverImage) {
+        blankMouseOverImage = initBlankTileMouseOverImage;
+    }
+
+    public JPanel getCanvas() {
+        return game.getCanvas();
+    }
+
+    /**
+     * This is where rendering starts. This method is called each frame, and the
+     * entire game application is rendered here with the help of a number of
+     * helper methods.
+     *
+     * @param g The Graphics context for this panel.
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        try {
+
+            // WE'LL USE THE Graphics2D FEATURES, WHICH IS 
+            // THE ACTUAL TYPE OF THE g OBJECT
+            Graphics2D g2 = (Graphics2D) g;
+
+            // MAKE SURE WE HAVE EXCLUSIVE ACCESS TO THE GAME DATA
+            game.beginUsingData();
+
+            // CLEAR THE PANEL
+            super.paintComponent(g);
+
+            // RENDER THE BACKGROUND, WHICHEVER SCREEN WE'RE ON
+            if (((PathXMiniGame) game).isCurrentScreenState(LEVEL_SELECT_SCREEN_STATE)) {
+                renderMap(g);
+                renderLocations(g);
+            } else if (((PathXMiniGame) game).isCurrentScreenState(GAME_SCREEN_STATE)) {
+                // RENDER THE BACKGROUND IMAGE
+                renderLevelBackground(g2);
+
+                // RENDER THE ROADS
+                renderRoads(g2);
+                // RENDER THE INTERSECTIONS
+                renderIntersections(g2);
+                // RENDERING STATS CAN HELP FIGURE OUT WHAT'S GOING ON
+                renderStats(g2);
+            }
+
+            renderBackground(g);
+            renderDialogs(g);
+
+            // ONLY RENDER THIS STUFF IF WE'RE ACTUALLY IN-GAME
+            if (!data.notStarted()) {
+                // RENDER THE SNAKE
+               /* if (!data.won())
+                 renderSnake(g);
+                
+                 // AND THE TILES
+                 renderTiles(g);*/
+
+                // AND THE DIALOGS, IF THERE ARE ANY
+                // RENDERING THE GRID WHERE ALL THE TILES GO CAN BE HELPFUL
+                // DURING DEBUGGIN TO BETTER UNDERSTAND HOW THEY RE LAID OUT
+                renderGrid(g);
+
+                // RENDER THE ALGORITHM NAME
+                //  renderHeader(g);
+            }
+
+            // AND THE BUTTONS AND DECOR
+            renderGUIControls(g);
+
+            // AND THE TIME AND TILES STATS
+            renderStats(g);
+
+            // AND FINALLY, TEXT FOR DEBUGGING
+            renderDebuggingText(g);
+        } finally {
+            // RELEASE THE LOCK
+            game.endUsingData();
+        }
+    }
+
+    //RENDERING HELPER METHODS
+    // - renderBackground
+    // - renderGUIControls
+    // - renderSnake
+    // - renderTiles
+    // - renderDialogs
+    // - renderGrid
+    // - renderDebuggingText
+    /**
+     * `
+     * Renders the background image, which is different depending on the screen.
+     *
+     * @param g the Graphics context of this panel.
+     */
+    public void renderBackground(Graphics g) {
+        // THERE IS ONLY ONE CURRENTLY SET
+        Sprite bg = game.getGUIDecor().get(BACKGROUND_TYPE);
+        renderSprite(g, bg);
+    }
+
+    public void renderLocations(Graphics g) {
+
+        ArrayList<String> levels = props.getPropertyOptionsList(PathXPropertyType.LEVEL_OPTIONS);
+        int[] levelx = {CALI1_X, CALI2_X, CALI3_X,
+            SILICON1_X, SILICON2_X, SILICON3_X,
+            NEVADA1_X, NEVADA2_X, NEVADA3_X,
+            WEST1_X, WEST2_X, WEST3_X,
+            FLORIDA1_X, FLORIDA2_X, FLORIDA3_X,
+            I951_X, I952_X, I953_X,
+            WALLSTREET1_X, WALLSTREET2_X, WALLSTREET3_X};
+        int[] levely = {CALI1_Y, CALI2_Y, CALI3_Y,
+            SILICON1_Y, SILICON2_Y, SILICON3_Y,
+            NEVADA1_Y, NEVADA2_Y, NEVADA3_Y,
+            WEST1_Y, WEST2_Y, WEST3_Y,
+            FLORIDA1_Y, FLORIDA2_Y, FLORIDA3_Y,
+            I951_Y, I952_Y, I953_Y,
+            WALLSTREET1_Y, WALLSTREET2_Y, WALLSTREET3_Y};
+
+        for (int i = 0; i < levels.size(); i++) {
+            Sprite bg = game.getGUIButtons().get(levels.get(i));
+            bg.setX(data.getViewport().getViewportX() - VIEWPORT_OFFSET_X + levelx[i]);
+            bg.setY(data.getViewport().getViewportY() - VIEWPORT_OFFSET_Y + levely[i]);
+
+            renderSprite(g, bg);
+        }
+    }
+
+    public void renderMap(Graphics g) {
+        Sprite bg = game.getGUIDecor().get(MAP_TYPE);
+        renderViewport(g, bg);
+    }
+
+    /**
+     * Renders all the GUI decor and buttons.
+     *
+     * @param g this panel's rendering context.
+     */
+    public void renderGUIControls(Graphics g) {
+        // GET EACH DECOR IMAGE ONE AT A TIME
+        Collection<Sprite> decorSprites = game.getGUIDecor().values();
+        for (Sprite s : decorSprites) {
+            if ((s.getSpriteType().getSpriteTypeID() != BACKGROUND_TYPE)
+                    && (s.getSpriteType().getSpriteTypeID() != MAP_TYPE)) {
+                renderSprite(g, s);
+            }
+        }
+
+        // AND NOW RENDER THE BUTTONS
+        Collection<Sprite> buttonSprites = game.getGUIButtons().values();
+        for (Sprite s : buttonSprites) {
+            if ((s.getSpriteType().getSpriteTypeID() != LOCATION_BUTTON_TYPE)) {
+                renderSprite(g, s);
+            }
+        }
+    }
+
+    public void renderStats(Graphics g) {
+        if (((PathXMiniGame) game).isCurrentScreenState(LEVEL_SELECT_SCREEN_STATE)) {
+
+            g.setFont(FONT_TEXT_DISPLAY);
+            g.setColor(Color.BLACK);
+            g.drawString("Balance: $" + data.getBalance(), 190, 40);
+            g.drawString("Goal: $" + data.getGoal(), 190, 80);
+
+            g.setFont(FONT_STATS);
+            ArrayList<String> levels = props.getPropertyOptionsList(PathXPropertyType.LEVEL_OPTIONS);
+            String[] levelName = data.getLevelName();
+            int[] moneyEarned = data.getMoneyEarned();
+            for (int i = 0; i < levels.size(); i++) {
+                if (game.getGUIButtons().get(levels.get(i)).getState().equals(PathXState.MOUSE_OVER_STATE.toString())) {
+                    g.drawString(levelName[i] + " - $" + moneyEarned[i], 365, 460);
+                }
+            }
+        }
+
+        if (game.getGUIDialogs().get(INFO_DIALOG_TYPE).getState().equals(PathXState.VISIBLE_STATE.toString())) {
+
+            ArrayList<String> levels = props.getPropertyOptionsList(PathXPropertyType.LEVEL_OPTIONS);
+
+            String[] levelName = data.getLevelName();
+            int[] moneyEarned = data.getMoneyEarned();
+
+            g.setColor(Color.BLACK);
+            g.setFont(FONT_STATS);
+            for (int i = 0; i < levels.size(); i++) {
+                if (((PathXDataModel) game.getDataModel()).getCurrentLevel().equals(levels.get(i))) {
+                    g.drawString(levelName[i], 235, 100);
+                    g.drawString("Rob the Bank of ", 235, 160);
+                    g.drawString(levelName[i], 235, 190);
+                    g.drawString("and make your getaway", 235, 220);
+                    g.drawString(" to earn $ " + moneyEarned[i] + ".", 235, 250);
+                }
+            }
+        }
+    }
+
+    /*public void renderHeader(Graphics g)
+     {
+     g.setColor(COLOR_ALGORITHM_HEADER);
+        
+     }
+    
+     public void renderSnake(Graphics g)
+     {
+     ArrayList<SnakeCell> snake = data.getSnake();
+     int red = 255;
+     Viewport viewport = data.getViewport();
+     for (SnakeCell sC : snake)
+     {
+     int x = data.calculateGridTileX(sC.col);
+     int y = data.calculateGridTileY(sC.row);            
+     g.setColor(new Color(0, 0, red, 200));
+     g.fillRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+     red -= COLOR_INC;
+     g.setColor(Color.BLACK);
+     g.drawRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+     }
+     }*/
+    /**
+     * This method renders the on-screen stats that change as the game
+     * progresses. This means things like the game time and the number of tiles
+     * remaining.
+     *
+     * @param g the Graphics context for this panel
+     */
+    /* public void renderStats(Graphics g)
+     {
+     // RENDER THE GAME TIME AND THE TILES LEFT FOR IN-GAME
+     if (((SortingHatMiniGame)game).isCurrentScreenState(GAME_SCREEN_STATE) 
+     && data.inProgress() || data.isPaused())
+     {
+     // RENDER THE TILES LEFT
+     g.setFont(FONT_TEXT_DISPLAY);
+     g.setColor(Color.BLACK);
+     String tilesRemaining = "" + data.getBadSpellsCounter();
+     int x = TILE_COUNT_X + TILE_COUNT_OFFSET;
+     int y = TILE_COUNT_Y + TILE_TEXT_OFFSET;
+     g.drawString(tilesRemaining , x, y);
+        
+     // RENDER THE TIME
+     String time = data.gameTimeToText();
+     x = TIME_X + TIME_OFFSET;
+     y = TIME_Y + TIME_TEXT_OFFSET;
+     g.drawString(time, x, y);
+     }        
+        
+     // IF THE STATS DIALOG IS VISIBLE, ADD THE TEXTUAL STATS
+     if (game.getGUIDialogs().get(STATS_DIALOG_TYPE).getState().equals(SortingHatTileState.VISIBLE_STATE.toString()))
+     {
+     g.setFont(FONT_STATS);
+     g.setColor(COLOR_STATS);
+     String currentLevel = data.getCurrentLevel();
+     int lastSlash = currentLevel.lastIndexOf("/");
+     String levelName = currentLevel.substring(lastSlash+1);
+     SortingHatRecord record = ((SortingHatMiniGame)game).getPlayerRecord();
+
+     // GET ALL THE STATS
+     String algorithm = record.getAlgorithm(currentLevel);
+     int games = record.getGamesPlayed(currentLevel);
+     int wins = record.getWins(currentLevel);
+     int perfectWins = record.getPerfectWins(currentLevel);
+     long fastestPerfectWin = record.getFastestPerfectWinTime(currentLevel);
+     String fastestText = data.timeToText(fastestPerfectWin);
+
+     // GET ALL THE STATS PROMPTS
+     PropertiesManager props = PropertiesManager.getPropertiesManager();            
+     String algorithmPrompt = props.getProperty(SortingHatPropertyType.TEXT_LABEL_STATS_ALGORITHM);
+     String gamesPrompt = props.getProperty(SortingHatPropertyType.TEXT_LABEL_STATS_GAMES);
+     String winsPrompt = props.getProperty(SortingHatPropertyType.TEXT_LABEL_STATS_WINS);
+     String perfectWinsPrompt = props.getProperty(SortingHatPropertyType.TEXT_LABEL_STATS_PERFECT_WINS);
+     String fastestPerfectWinPrompt = props.getProperty(SortingHatPropertyType.TEXT_LABEL_STATS_FASTEST_PERFECT_WIN);
+
+     // NOW DRAW ALL THE STATS WITH THEIR LABELS
+     int dot = levelName.indexOf(".");
+     levelName = levelName.substring(0, dot);
+     g.drawString(levelName,                                     STATS_LEVEL_X, STATS_LEVEL_Y);
+     g.drawString(algorithmPrompt + algorithm,                   STATS_LEVEL_X, STATS_ALGORITHM_Y);
+     g.drawString(gamesPrompt + games,                           STATS_LEVEL_X, STATS_GAMES_Y);
+     g.drawString(winsPrompt + wins,                             STATS_LEVEL_X, STATS_WINS_Y);
+     g.drawString(perfectWinsPrompt + perfectWins,               STATS_LEVEL_X, STATS_PERFECT_WINS_Y);
+     if (perfectWins > 0)
+     g.drawString(fastestPerfectWinPrompt + fastestText,         STATS_LEVEL_X, STATS_FASTEST_PERFECT_WIN_Y);
+     }
+     }*/
+    /**
+     * Renders all the game tiles, doing so carefully such that they are
+     * rendered in the proper order.
+     *
+     * @param g the Graphics context of this panel.
+     */
+    /* public void renderCharSprites(Graphics g)
+     {
+     // DRAW THE GRID
+     ArrayList PlayerSprite = data.getPlayerSprite();
+     ArrayList CharSprites = data.getCharSprites();
+     for (int i = 0; i < CharSprites.size(); i++)
+     {
+     Object Char = CharSprites.get(i);
+     if (Char != null)
+     renderTile(g, tile);
+     }
+        
+     // THEN DRAW ALL THE MOVING TILES
+     Iterator<SortingHatTile> movingTiles = data.getMovingTiles();
+     while (movingTiles.hasNext())
+     {
+     SortingHatTile tile = movingTiles.next();
+     renderTile(g, tile);
+     }
+     }*/
+    /**
+     * Helper method for rendering the tiles that are currently moving.
+     *
+     * @param g Rendering context for this panel.
+     *
+     * @param tileToRender Tile to render to this panel.
+     */
+    /*public void renderTile(Graphics g, SortingHatTile tileToRender)
+     {
+     // ONLY RENDER VISIBLE TILES
+     if (!tileToRender.getState().equals(SortingHatTileState.INVISIBLE_STATE.toString()))
+     {
+     Viewport viewport = data.getViewport();
+     int correctedTileX = (int)(tileToRender.getX());
+     int correctedTileY = (int)(tileToRender.getY());
+
+     // THEN THE TILE IMAGE
+     SpriteType bgST = tileToRender.getSpriteType();
+     Image img = bgST.getStateImage(tileToRender.getState());
+     g.drawImage(img,    correctedTileX, 
+     correctedTileY, 
+     bgST.getWidth(), bgST.getHeight(), null); 
+     }
+     }*/
+    /**
+     * Renders the game dialog boxes.
+     *
+     * @param g This panel's graphics context.
+     */
+    public void renderDialogs(Graphics g) {
+        // GET EACH DECOR IMAGE ONE AT A TIME
+        Collection<Sprite> dialogSprites = game.getGUIDialogs().values();
+        for (Sprite s : dialogSprites) {
+            // RENDER THE DIALOG, NOTE IT WILL ONLY DO IT IF IT'S VISIBLE
+            renderSprite(g, s);
+        }
+    }
+
+    /**
+     * Renders the s Sprite into the Graphics context g. Note that each Sprite
+     * knows its own x,y coordinate location.
+     *
+     * @param g the Graphics context of this panel
+     *
+     * @param s the Sprite to be rendered
+     */
+    public void renderSprite(Graphics g, Sprite s) {
+        // ONLY RENDER THE VISIBLE ONES
+        if (!s.getState().equals(PathXState.INVISIBLE_STATE.toString())) {
+            SpriteType bgST = s.getSpriteType();
+            Image img = bgST.getStateImage(s.getState());
+            g.drawImage(img, (int) s.getX(), (int) s.getY(), bgST.getWidth(), bgST.getHeight(), null);
+        }
+    }
+
+    public void renderViewport(Graphics g, Sprite s) {
+        // ONLY RENDER THE VISIBLE ONES
+        if (!s.getState().equals(PathXState.INVISIBLE_STATE.toString())) {
+            SpriteType bgST = s.getSpriteType();
+            Image img = bgST.getStateImage(s.getState());
+//            g.drawImage(img, 0, VIEWPORT_OFFSET_Y, WINDOW_WIDTH, WINDOW_HEIGHT,
+//                    data.getViewport().getViewportX() - VIEWPORT_OFFSET_X, data.getViewport().getViewportY() - VIEWPORT_OFFSET_Y,
+//                    data.getViewport().getViewportX() - VIEWPORT_OFFSET_X + data.getViewport().getViewportWidth(),
+//                    data.getViewport().getViewportY() - VIEWPORT_OFFSET_Y + data.getViewport().getViewportHeight(), null);
+            Viewport vP = data.getViewport();
+
+            g.drawImage(img, vP.getViewportX(), vP.getViewportY(), vP.getViewportWidth(), vP.getViewportHeight(), null);
+        }
+    }
+
+    /**
+     * This method renders grid lines in the game tile grid to help during
+     * debugging.
+     *
+     * @param g Graphics context for this panel.
+     */
+    public void renderGrid(Graphics g) {
+        // ONLY RENDER THE GRID IF WE'RE DEBUGGING
+        if (data.isDebugTextRenderingActive()) {
+            for (int i = 0; i < data.getNumGameGridColumns(); i++) {
+                for (int j = 0; j < data.getNumGameGridRows(); j++) {
+                    int x = data.calculateGridTileX(i);
+                    int y = data.calculateGridTileY(j);
+                    g.drawRect(x, y, TILE_WIDTH, TILE_HEIGHT);
+                }
+            }
+        }
+    }
+
+    // HELPER METHOD FOR RENDERING THE LEVEL BACKGROUND
+    private void renderLevelBackground(Graphics2D g2) {
+
+        Image backgroundImage = data.getBackgroundImage();
+        /*g2.drawImage(backgroundImage, 135, 10, data.getViewport().getViewportWidth(), data.getViewport().getViewportHeight(),
+         data.getViewport().getViewportX(), data.getViewport().getViewportY(), 
+         data.getViewport().getViewportX() + data.getViewport().getViewportWidth(), 
+         data.getViewport().getViewportY() + data.getViewport().getViewportHeight(), null);*/
+
+        Viewport vP = data.getViewport();
+//        vP.setGameWorldSize(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+//        vP.setViewportOffset(0, 0);
+//        vP.setViewportSize(VIEWPORT_GAME_WIDTH, VIEWPORT_GAME_HEIGHT);
+//        vP.initViewportMargins();
+//        vP.updateViewportBoundaries();
+        vP.setLevelDimensions(GAME_LEVEL_WIDTH, GAME_LEVEL_HEIGHT);
+        g2.drawImage(backgroundImage, vP.getViewportX(), vP.getViewportY(), vP.getViewportWidth(), vP.getViewportHeight(), null);
+    }
+
+    // HELPER METHOD FOR RENDERING THE LEVEL ROADS
+    private void renderRoads(Graphics2D g2) {
+        // GO THROUGH THE ROADS AND RENDER ALL OF THEM
+        Viewport vP = data.getViewport();
+        Iterator<Road> it = data.roadsIterator();
+        g2.setStroke(recyclableStrokes.get(INT_STROKE));
+        while (it.hasNext()) {
+            Road road = it.next();
+            //if (!data.isSelectedRoad(road))
+            renderRoad(g2, road, INT_OUTLINE_COLOR);
+        }
+
+        // NOW DRAW THE LINE BEING ADDED, IF THERE IS ONE
+        // if (data.isAddingRoadEnd())
+        // {
+//        Intersection startRoadIntersection = data.getStartRoadIntersection();
+//        recyclableLine.x1 = startRoadIntersection.x - vP.getViewportX();
+//        recyclableLine.y1 = startRoadIntersection.y - vP.getViewportY();
+//        recyclableLine.x2 = data.getLastMouseX() - vP.getViewportX();
+//        recyclableLine.y2 = data.getLastMouseY() - vP.getViewportY();
+//        g2.draw(recyclableLine);
+        //}
+        // AND RENDER THE SELECTED ONE, IF THERE IS ONE
+        /*Road selectedRoad = data.getSelectedRoad();
+         if (selectedRoad != null)
+         {
+         renderRoad(g2, selectedRoad, HIGHLIGHTED_COLOR);
+         }*/
+    }
+
+    // HELPER METHOD FOR RENDERING A SINGLE ROAD
+    private void renderRoad(Graphics2D g2, Road road, Color c) {
+        Viewport vP = data.getViewport();
+        g2.setColor(c);
+        int strokeId = road.getSpeedLimit() / 10;
+
+        // CLAMP THE SPEED LIMIT STROKE
+        if (strokeId < 1) {
+            strokeId = 1;
+        }
+        if (strokeId > 10) {
+            strokeId = 10;
+        }
+        g2.setStroke(recyclableStrokes.get(strokeId));
+
+        // LOAD ALL THE DATA INTO THE RECYCLABLE LINE
+        recyclableLine.x1 = road.getNode1().x - vP.getViewportX();
+        recyclableLine.y1 = road.getNode1().y - vP.getViewportY();
+        recyclableLine.x2 = road.getNode2().x - vP.getViewportX();
+        recyclableLine.y2 = road.getNode2().y - vP.getViewportY();
+
+        // AND DRAW IT
+        g2.draw(recyclableLine);
+
+        // AND IF IT'S A ONE WAY ROAD DRAW THE MARKER
+        if (road.isOneWay()) {
+            this.renderOneWaySignalsOnRecyclableLine(g2);
+        }
+    }
+
+    // HELPER METHOD FOR RENDERING AN INTERSECTION
+    private void renderIntersections(Graphics2D g2) {
+        Viewport vP = data.getViewport();
+        Iterator<Intersection> it = data.intersectionsIterator();
+        while (it.hasNext()) {
+            Intersection intersection = it.next();
+
+            // ONLY RENDER IT THIS WAY IF IT'S NOT THE START OR DESTINATION
+            // AND IT IS IN THE VIEWPORT
+            if ((!data.isStartingLocation(intersection))
+                    && (!data.isDestination(intersection))
+                    && vP.isCircleBoundingBoxInsideViewport(intersection.x, intersection.y, INTERSECTION_RADIUS)) {
+                // FIRST FILL
+                if (intersection.isOpen()) {
+                    g2.setColor(OPEN_INT_COLOR);
+                } else {
+                    g2.setColor(CLOSED_INT_COLOR);
+                }
+                recyclableCircle.x = intersection.x - vP.getViewportX() - INTERSECTION_RADIUS;
+                recyclableCircle.y = intersection.y - vP.getViewportY() - INTERSECTION_RADIUS;
+                g2.fill(recyclableCircle);
+
+                // AND NOW THE OUTLINE
+                /*if (data.isSelectedIntersection(intersection))
+                 {
+                 g2.setColor(HIGHLIGHTED_COLOR);
+                 } else
+                 {
+                 g2.setColor(INT_OUTLINE_COLOR);
+                 }*/
+                Stroke s = recyclableStrokes.get(INT_STROKE);
+                g2.setStroke(s);
+                g2.draw(recyclableCircle);
+            }
+        }
+
+        // AND NOW RENDER THE START AND DESTINATION LOCATIONS
+        Image startImage = data.getStartingLocationImage();
+        Intersection startInt = data.getStartingLocation();
+        renderIntersectionImage(g2, startImage, startInt);
+
+        Image destImage = data.getDesinationImage();
+        Intersection destInt = data.getDestination();
+        renderIntersectionImage(g2, destImage, destInt);
+    }
+
+    // HELPER METHOD FOR RENDERING AN IMAGE AT AN INTERSECTION, WHICH IS
+    // NEEDED BY THE STARTING LOCATION AND THE DESTINATION
+    private void renderIntersectionImage(Graphics2D g2, Image img, Intersection i) {
+        Viewport vP = data.getViewport();
+        // CALCULATE WHERE TO RENDER IT
+        int w = img.getWidth(null);
+        int h = img.getHeight(null);
+        int x1 = i.x - (w / 2);
+        int y1 = i.y - (h / 2);
+        int x2 = x1 + img.getWidth(null);
+        int y2 = y1 + img.getHeight(null);
+
+        // ONLY RENDER IF INSIDE THE VIEWPORT
+        if (vP.isRectInsideViewport(x1, y1, x2, y2)) {
+            g2.drawImage(img, x1 - vP.getViewportX(), y1 - vP.getViewportY(), null);
+        }
+    }
+
+    // YOU'LL LIKELY AT THE VERY LEAST WANT THIS ONE. IT RENDERS A NICE
+    // LITTLE POINTING TRIANGLE ON ONE-WAY ROADS
+    private void renderOneWaySignalsOnRecyclableLine(Graphics2D g2) {
+        // CALCULATE THE ROAD LINE SLOPE
+        double diffX = recyclableLine.x2 - recyclableLine.x1;
+        double diffY = recyclableLine.y2 - recyclableLine.y1;
+        double slope = diffY / diffX;
+
+        // AND THEN FIND THE LINE MIDPOINT
+        double midX = (recyclableLine.x1 + recyclableLine.x2) / 2.0;
+        double midY = (recyclableLine.y1 + recyclableLine.y2) / 2.0;
+
+        // GET THE RENDERING TRANSFORM, WE'LL RETORE IT BACK
+        // AT THE END
+        AffineTransform oldAt = g2.getTransform();
+
+        // CALCULATE THE ROTATION ANGLE
+        double theta = Math.atan(slope);
+        if (recyclableLine.x2 < recyclableLine.x1) {
+            theta = (theta + Math.PI);
+        }
+
+        // MAKE A NEW TRANSFORM FOR THIS TRIANGLE AND SET IT
+        // UP WITH WHERE WE WANT TO PLACE IT AND HOW MUCH WE
+        // WANT TO ROTATE IT
+        AffineTransform at = new AffineTransform();
+        at.setToIdentity();
+        at.translate(midX, midY);
+        at.rotate(theta);
+        g2.setTransform(at);
+
+        // AND RENDER AS A SOLID TRIANGLE
+        g2.fill(recyclableTriangle);
+
+        // RESTORE THE OLD TRANSFORM SO EVERYTHING DOESN'T END UP ROTATED 0
+        g2.setTransform(oldAt);
+    }
+
+    /**
+     * Renders the debugging text to the panel. Note that the rendering will
+     * only actually be done if data has activated debug text rendering.
+     *
+     * @param g the Graphics context for this panel
+     */
+    public void renderDebuggingText(Graphics g) {
+        // IF IT'S ACTIVATED
+        if (data.isDebugTextRenderingActive()) {
+            // ENABLE PROPER RENDER SETTINGS
+            g.setFont(FONT_DEBUG_TEXT);
+            g.setColor(COLOR_DEBUG_TEXT);
+
+            // GO THROUGH ALL THE DEBUG TEXT
+            Iterator<String> it = data.getDebugText().iterator();
+            int x = data.getDebugTextX();
+            int y = data.getDebugTextY();
+            while (it.hasNext()) {
+                // RENDER THE TEXT
+                String text = it.next();
+                g.drawString(text, x, y);
+                y += 20;
+            }
+        }
+    }
+
+    public BufferedImage loadImage(String fileName) {
+        // LOAD THE IMAGE
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        Image img = tk.createImage(fileName);
+
+        // AND WAIT FOR IT TO BE FULLY IN MEMORY BEFORE RETURNING IT
+        MediaTracker tracker = new MediaTracker(window);
+        tracker.addImage(img, 0);
+        try {
+            tracker.waitForID(0);
+        } catch (InterruptedException ie) {
+            System.out.println("MT INTERRUPTED");
+        }
+
+        // WE'LL USE BUFFERED IMAGES
+        BufferedImage imageToLoad = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = imageToLoad.getGraphics();
+        g.drawImage(img, 0, 0, null);
+
+        return imageToLoad;
+    }
+
+}

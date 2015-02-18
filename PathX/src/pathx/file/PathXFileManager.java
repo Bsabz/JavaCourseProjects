@@ -1,0 +1,113 @@
+package pathx.file;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import javax.swing.filechooser.FileFilter;
+import mini_game.Viewport;
+import pathx.PathX.PathXPropertyType;
+import pathx.data.PathXDataModel;
+import pathx.ui.PathXMiniGame;
+import properties_manager.PropertiesManager;
+import static pathx.PathXConstants.*;
+import pathx.ui.PathXPanel;
+/*import pathx.data.SnakeCell;
+import pathx.data.SortingHatAlgorithm;
+import pathx.data.SortingHatAlgorithmFactory;
+import pathx.data.SortingHatAlgorithmType;
+
+/**
+ * This class provides services for efficiently loading and saving
+ * binary files for PathX game application.
+ * 
+ * @author Brian Sabz
+ */
+public class PathXFileManager {
+    
+    // WE'LL LET THE GAME KNOW WHEN DATA LOADING IS COMPLETE
+    private PathXMiniGame miniGame;
+    
+    // THIS DOEST THE ACTUAL FILE I/O
+    PathXLevelIO levelIO;
+    String levelFileExtension;
+    FileFilter fileFilter;
+
+    // THE VIEW AND DATA TO BE UPDATED DURING LOADING
+    PathXPanel view;
+    PathXDataModel model;
+
+    // WE'LL STORE THE FILE CURRENTLY BEING WORKED ON
+    // AND THE NAME OF THE FILE
+    private File currentFile;
+    private String currentFileName;
+
+    // WE WANT TO KEEP TRACK OF WHEN SOMETHING HAS NOT BEEN SAVED
+    private boolean saved;
+    
+    /**
+     * Constructor for initializing this file manager, it simply keeps
+     * the game for later.
+     * 
+     * @param initMiniGame The game for which this class loads data.
+     */
+    public PathXFileManager(PathXPanel initView, PathXDataModel initModel, PathXMiniGame initMiniGame)
+    {
+        // KEEP IT FOR LATER
+        miniGame = initMiniGame;
+        
+        // KEEP THESE REFERENCE FOR LATER
+        view = initView;
+        model = initModel;
+        
+        fileFilter = new XMLFilter();
+        
+        // NOTHING YET
+        currentFile = null;
+        currentFileName = null;
+        saved = true;
+    }
+
+    
+    // HELPER METHOD, THIS EMPLOYS THE FILE I/O COMPONENT
+    // TO DO THE ACTUAL WORK OF LEVEL SAVING
+    public boolean save(File fileToTry)
+    {
+        return levelIO.saveLevel(fileToTry, model.getLevel());
+    }
+
+    // HELPER METHOD, THIS EMPLOYS THE FILE I/O COMPONENT
+    // TO DO THE ACTUAL WORK OF LEVEL LOADING
+    public boolean load(File testFile)
+    {
+        return levelIO.loadLevel(testFile, model);
+    }
+    
+    /**
+     * This helper class is so that the user only selects
+     * xml files.
+     */
+    class XMLFilter extends FileFilter
+    {
+        @Override
+        public boolean accept(File f)
+        {
+            String fileName = f.getName().toLowerCase();
+            if (fileName.endsWith(".xml"))
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Select XML Level File";
+        }
+    }
+}

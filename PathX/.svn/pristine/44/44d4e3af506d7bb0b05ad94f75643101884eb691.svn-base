@@ -1,0 +1,31 @@
+package pathx.ui;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.swing.JPanel;
+import mini_game.MiniGame;
+import mini_game.Sprite;
+import mini_game.SpriteType;
+import mini_game.Viewport;
+import properties_manager.PropertiesManager;
+import pathx.data.PathXDataModel;
+import static pathx.PathXConstants.*;
+import pathx.PathX.SortingHatPropertyType;
+import pathx.data.SnakeCell;
+import pathx.data.PathXRecord;
+
+/**
+ *
+ * This class performs all of the rendering for the PathX game application.
+ * 
+ * @author Brian Sabz
+ */
+public class PathXPanel extends JPanel {
+    
+}

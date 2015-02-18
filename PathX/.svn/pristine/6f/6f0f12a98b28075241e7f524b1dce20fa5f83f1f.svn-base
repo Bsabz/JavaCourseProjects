@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    The properties in this file setup a Cops & Robbers flavor of this game called
+    PathX. Note that by swapping out all these settings we could easily
+    change the flavor.
+-->
+<properties>
+    <property_list>
+        <!-- ALL THE IMAGES TO BE USED IN THE GAME -->
+        <property name="IMAGE_BACKGROUND_GAME"              value="./pathx/BackgroundGame.png"></property>
+        <property name="IMAGE_BACKGROUND_MENU"              value="./pathx/BackgroundMenu.png"></property>
+		<property name="IMAGE_BACKGROUND_SETTINGS"          value="./pathx/BackgroundSettings.png"></property>
+		<property name="IMAGE_BACKGROUND_LEVEL_SELECT"      value="./pathx/BackgroundLevelSelect.png"></property>
+		<property name="IMAGE_LEVEL_MAP"                    value="./pathx/levelMap.png"></property>
+		<property name="IMAGE_BACKGROUND_HELP"              value="./pathx/BackgroundHelp.png"></property>
+		<property name="IMAGE_BUTTON_PLAY"                  value="./pathx/ButtonPlay.png"></property>
+		<property name="IMAGE_BUTTON_SETTINGS"              value="./pathx/ButtonSetting.png"></property>
+        <property name="IMAGE_BUTTON_RESET"                 value="./pathx/ButtonReset.png"></property>
+		<property name="IMAGE_BUTTON_HELP"                  value="./pathx/ButtonHelp.png"></property>
+		<property name="IMAGE_BUTTON_CLOSE"                 value="./pathx/ButtonClose.png"></property>
+		<property name="IMAGE_BUTTON_HOME"                  value="./pathx/ButtonHome.png"></property>
+		<property name="IMAGE_BUTTON_START"                 value="./pathx/ButtonStart.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_UP"             value="./pathx/ButtonUp.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_DOWN"           value="./pathx/ButtonDown.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_LEFT"           value="./pathx/ButtonLeft.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_RIGHT"          value="./pathx/ButtonRight.png"></property>
+		<property name="IMAGE_BUTTON_PLAY_GAME"             value="./pathx/ButtonPlayGame.png"></property>
+		<property name="IMAGE_BUTTON_PAUSE_GAME"            value="./pathx/ButtonPauseGame.png"></property>
+		<property name="IMAGE_BUTTON_LOCATION_COMPLETE"     value="./pathx/ButtonLocationComplete.png"></property>
+		<property name="IMAGE_BUTTON_LOCATION_LOCKED"       value="./pathx/ButtonLocationLocked.png"></property>
+		<property name="IMAGE_BUTTON_LOCATION_UNLOCKED"     value="./pathx/ButtonLocationUnlocked.png"></property>
+		
+		<!-- ALL THE MOUSEOVERS -->
+		<property name="IMAGE_BUTTON_PLAY_MOUSE_OVER"       value="./pathx/ButtonPlayMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_SETTINGS_MOUSE_OVER"   value="./pathx/ButtonSettingMouseOver.png"></property>
+        <property name="IMAGE_BUTTON_RESET_MOUSE_OVER"      value="./pathx/ButtonResetMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_HELP_MOUSE_OVER"       value="./pathx/ButtonHelpMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_CLOSE_MOUSE_OVER"      value="./pathx/ButtonCloseMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_HOME_MOUSE_OVER"       value="./pathx/ButtonHomeMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_UP_MOUSE_OVER"    value="./pathx/ButtonUpMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_DOWN_MOUSE_OVER"  value="./pathx/ButtonDownMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_LEFT_MOUSE_OVER"  value="./pathx/ButtonLeftMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_SCROLL_RIGHT_MOUSE_OVER" value="./pathx/ButtonRightMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_START_MOUSE_OVER"        value="./pathx/ButtonStartMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_PLAY_GAME_MOUSE_OVER"    value="./pathx/ButtonPlayGameMouseOver.png"></property>
+		<property name="IMAGE_BUTTON_PAUSE_GAME_MOUSE_OVER"   value="./pathx/ButtonPauseGameMouseOver.png"></property>
+		
+		<!-- SPECIALS -->
+		<property name="IMAGE_GREENLIGHT_BUTTON"            value="./pathx/ButtonGreenLight.png"></property>
+		<property name="IMAGE_REDLIGHT_BUTTON"              value="./pathx/ButtonRedLight.png"></property>
+		<property name="IMAGE_TIMEFREEZE_BUTTON"            value="./pathx/ButtonFreezeTime.png"></property>
+		<property name="IMAGE_INCSPEED_BUTTON"              value="./pathx/ButtonIncSpeed.png"></property>
+		<property name="IMAGE_DECSPEED_BUTTON"              value="./pathx/ButtonDecSpeed.png"></property>
+		<property name="IMAGE_INCPLAYERSPEED_BUTTON"        value="./pathx/ButtonIncPlayerSpeed.png"></property>
+		<property name="IMAGE_FLAT_TIRE_BUTTON"             value="./pathx/ButtonFlatTire.png"></property>
+		<property name="IMAGE_EMPTYTANK_BUTTON"             value="./pathx/ButtonEmptyTank.png"></property>
+		<property name="IMAGE_CLOSE_ROAD_BUTTON"            value="./pathx/ButtonCloseRoad.png"></property>
+		<property name="IMAGE_CLOSE_INTERSECTION_BUTTON"    value="./pathx/ButtonCloseIntersection.png"></property>
+		<property name="IMAGE_OPEN_INTERSECTION_BUTTON"     value="./pathx/ButtonOpenIntersection.png"></property>
+		<property name="IMAGE_MINDCONTROL_BUTTON"           value="./pathx/ButtonMindControl.png"></property>
+		<property name="IMAGE_INTANGIBILITY_BUTTON"         value="./pathx/ButtonIntangibility.png"></property>
+		<!--MISSING IMAGE!!!  <property name="IMAGE_MINDLESS_TERROR_BUTTON"       value="./pathx/ButtonPlay.png"></property> -->
+		<property name="IMAGE_FLYING_BUTTON"                value="./pathx/ButtonFlying.png"></property>
+		<property name="IMAGE_INVINCIBILITY_BUTTON"         value="./pathx/ButtonInvincibility.png"></property>
+		<property name="IMAGE_DIALOG_INFO"                  value="./pathx/DialogInfo.png"></property>
+		
+		<!-- CHARACTER SPRITES -->
+		<property name="IMAGE_PLAYER_SPRITE"            value="./pathx/playerSprite.png"></property>
+		<property name="IMAGE_POLICE_SPRITE"            value="./pathx/policeSprite.png"></property>
+		<property name="IMAGE_ZOMBIE_SPRITE"            value="./pathx/zombieSprite.png"></property>
+		<property name="IMAGE_BANDIT_SPRITE"            value="./pathx/banditSprite.png"></property>
+		
+		
+		
+		<!-- SORTING HAT STUFF THAT I MIGHT NEED 
+        <property name="IMAGE_BUTTON_STATS"                 value="./pathx/ButtonStats.png"></property>
+        <property name="IMAGE_BUTTON_STATS_MOUSE_OVER"      value="./pathx/ButtonStatsMouseOver.png"></property>
+        <property name="IMAGE_BUTTON_UNDO"                  value="./pathx/ButtonUndo.png"></property>
+        <property name="IMAGE_BUTTON_UNDO_MOUSE_OVER"       value="./pathx/ButtonUndoMouseOver.png"></property>
+        <property name="IMAGE_BUTTON_TEMP_TILE"             value="./pathx/ButtonTempTile.png"></property>
+        <property name="IMAGE_BUTTON_TEMP_TILE_MOUSE_OVER"  value="./pathx/ButtonTempTileMouseOver.png"></property>
+		-->
+		
+		<!-- CURSOR IMAGE -->
+        <property name="IMAGE_CURSOR_ARROW"                 value="./pathx/CursorArrow.png"></property>
+		
+		<!-- MORE SORTING HAT STUFF THAT I MIGHT NEED
+        <property name="IMAGE_DECOR_TIME"                   value="./pathx/DecorTime.png"></property>
+        <property name="IMAGE_DECOR_MISCASTS"               value="./pathx/DecorMiscasts.png"></property>
+        <property name="IMAGE_DIALOG_STATS"                 value="./pathx/DialogStats.png"></property>
+        <property name="IMAGE_DIALOG_WIN"                   value="./pathx/DialogWin.png"></property>
+        <property name="IMAGE_TILE_BACKGROUND"              value="./pathx/TileBackground.png"></property>
+        <property name="IMAGE_TILE_BACKGROUND_SELECTED"     value="./pathx/TileBackgroundSelected.png"></property>
+        <property name="IMAGE_TILE_BACKGROUND_MOUSE_OVER"   value="./pathx/TileBackgroundMouseOver.png"></property>
+		-->
+        <property name="IMAGE_WINDOW_ICON"                  value="./pathx/WindowIcon.png"></property>
+
+        <!-- ALL THE TEXT TO BE DISPLAYED -->
+        <property name="TEXT_ERROR_LOADING_AUDIO"               value="Error Loading an Audio File"></property>
+        <property name="TEXT_ERROR_LOADING_LEVEL"               value="Error Loading a Level File"></property>
+        <property name="TEXT_ERROR_LOADING_RECORD"              value="Error Loading the Player Record"></property>
+        <property name="TEXT_ERROR_LOADING_XML_FILE"            value="Error Loading an XML File"></property>
+		<property name="TEXT_ERROR_SAVING_RECORD"               value="Error Saving the Player Record"></property>
+        
+		<!-- NOT NEEDED FOR NOW.....
+		<property name="TEXT_LABEL_STATS_ALGORITHM"             value="Algorithm: "></property>
+        <property name="TEXT_LABEL_STATS_GAMES"                 value="Games: "></property>
+        <property name="TEXT_LABEL_STATS_WINS"                  value="Wins: "></property>
+        <property name="TEXT_LABEL_STATS_PERFECT_WINS"          value="Perfect Wins: "></property>
+        <property name="TEXT_LABEL_STATS_FASTEST_PERFECT_WIN"   value="Fastest Perfect Win: "></property>
+		-->
+		
+        <property name="TEXT_PROMPT_EXIT"                       value="Are you sure you wish to exit?"></property>
+        <property name="TEXT_TITLE_BAR_GAME"                    value="PathX"></property>
+        <property name="TEXT_TITLE_BAR_ERROR"                   value="An error has occurred"></property>                
+        
+        <!-- AUDIO FILES -->
+        <property name="AUDIO_CUE_COLLISION"                value="./pathx/Collision.wav"></property>
+        <property name="AUDIO_CUE_FAIL"                     value="./pathx/Fail.wav"></property>
+        <property name="AUDIO_CUE_WIN"                      value="./pathx/Win.mid"></property>
+        <property name="SONG_CUE_GAME_SCREEN"               value="./pathx/GameSong.mid"></property>        
+        <property name="SONG_CUE_MENU_SCREEN"               value="./pathx/MenuSong.mid"></property>
+    </property_list>
+    
+    <!-- PLAYABLE LEVELS CREATED WITH THE LEVEL EDITOR -->
+    <property_options_list>
+	
+        <property_options name="LEVEL_OPTIONS">
+            <option>./pathx/Cali1.xml</option>
+            <option>./pathx/Cali2.xml</option>
+            <option>./pathx/Cali3.xml</option>
+            <option>./pathx/Silicon Valley1.xml</option>
+			<option>./pathx/Silicon Valley2.xml</option>
+			<option>./pathx/Silicon Valley3.xml</option>
+			<option>./pathx/Las Vegas1.xml</option>
+			<option>./pathx/Las Vegas2.xml</option>
+			<option>./pathx/Las Vegas3.xml</option>
+			<option>./pathx/Old West1.xml</option>
+			<option>./pathx/Old West2.xml</option>
+			<option>./pathx/Old West3.xml</option>
+			<option>./pathx/Florida1.xml</option>
+			<option>./pathx/Florida2.xml</option>
+			<option>./pathx/Florida3.xml</option>
+			<option>./pathx/I-95 Fort Knox1.xml</option>
+			<option>./pathx/I-95 Fort Knox2.xml</option>
+			<option>./pathx/I-95 Fort Knox3.xml</option>
+			<option>./pathx/Wall Street1.xml</option>
+			<option>./pathx/Wall Street2.xml</option>
+			<option>./pathx/Wall Street3.xml</option>
+        </property_options>
+		
+		
+		<!-- USE THESE PROPERTY OPTIONS ONLY FOR NOW -->
+        <property_options name="LEVEL_IMAGE_OPTIONS">
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+			<option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+			<option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+			<option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+			<option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+            <option>./pathx/ButtonLocationUnlocked.png</option>
+			<option>./pathx/ButtonLocationUnlocked.png</option>
+        </property_options>
+    </property_options_list>
+</properties>

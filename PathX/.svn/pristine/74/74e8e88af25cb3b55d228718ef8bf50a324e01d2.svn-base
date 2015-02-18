@@ -1,0 +1,179 @@
+package pathx;
+
+import pathx.ui.PathXMiniGame;
+import pathx.ui.PathXErrorHandler;
+import xml_utilities.InvalidXMLFileFormatException;
+import properties_manager.PropertiesManager;
+import static pathx.PathXConstants.*;
+
+/**
+ *
+ * @author Brian Sabz
+ */
+public class PathX {
+
+    // THIS HAS THE FULL USER INTERFACE AND ONCE IN EVENT
+    // HANDLING MODE, BASICALLY IT BECOMES THE FOCAL
+    // POINT, RUNNING THE UI AND EVERYTHING ELSE
+    static PathXMiniGame miniGame = new PathXMiniGame();
+
+    /**
+     * This is where The Sorting Hat game application starts execution. We'll
+     * load the application properties and then use them to build our
+     * user interface and start the window in real-time mode.
+     */
+    public static void main(String[] args)
+    {
+        try
+        {
+            // LOAD THE SETTINGS FOR STARTING THE APP
+            PropertiesManager props = PropertiesManager.getPropertiesManager();
+            props.addProperty(PropertiesManager.DATA_PATH_PROPERTY, PATH_DATA);
+            props.loadProperties(PROPERTIES_FILE_NAME, PROPERTIES_SCHEMA_FILE_NAME);
+            
+            // THEN WE'LL LOAD THE GAME FLAVOR AS SPECIFIED BY THE PROPERTIES FILE
+            String gameFlavorFile = props.getProperty(PathXPropertyType.FILE_GAME_PROPERTIES);
+            props.loadProperties(gameFlavorFile, PROPERTIES_SCHEMA_FILE_NAME);
+
+            // NOW WE CAN LOAD THE UI, WHICH WILL USE ALL THE FLAVORED CONTENT
+            String appTitle = props.getProperty(PathXPropertyType.TEXT_TITLE_BAR_GAME);
+            miniGame.initMiniGame(appTitle, FPS, WINDOW_WIDTH, WINDOW_HEIGHT);
+            
+            // GET THE PROPER WINDOW DIMENSIONS
+            miniGame.startGame();
+        }
+        // THERE WAS A PROBLEM LOADING THE PROPERTIES FILE
+        catch(InvalidXMLFileFormatException ixmlffe)
+        {
+            // LET THE ERROR HANDLER PROVIDE THE RESPONSE
+            PathXErrorHandler errorHandler = miniGame.getErrorHandler();
+            errorHandler.processError(PathXPropertyType.TEXT_ERROR_LOADING_XML_FILE);
+        }
+    }
+    
+    /**
+     * SortingHatPropertyType represents the types of data that will need
+     * to be extracted from XML files.
+     */
+    public enum PathXPropertyType
+    {
+        // LOADED FROM properties.xml
+        
+        /* SETUP FILE NAMES */
+        FILE_GAME_PROPERTIES,
+        FILE_PLAYER_RECORD,
+
+        /* DIRECTORY PATHS FOR FILE LOADING */
+        PATH_AUDIO,
+        PATH_IMG,
+        
+        // LOADED FROM THE GAME FLAVOR PROPERTIES XML FILE
+            // sorting_hat_properties.xml
+                
+        /* IMAGE FILE NAMES */
+        IMAGE_BACKGROUND_GAME,
+        IMAGE_BACKGROUND_MENU, 
+        IMAGE_BACKGROUND_SETTINGS,
+        IMAGE_BACKGROUND_LEVEL_SELECT,
+        IMAGE_BACKGROUND_HELP,
+        IMAGE_LEVEL_MAP,
+        IMAGE_BUTTON_PLAY,
+        IMAGE_BUTTON_SETTINGS,
+        IMAGE_BUTTON_RESET,
+        IMAGE_BUTTON_HELP,
+        IMAGE_BUTTON_CLOSE,
+        IMAGE_BUTTON_HOME,
+        IMAGE_BUTTON_START,
+        IMAGE_BUTTON_SCROLL_UP,
+        IMAGE_BUTTON_SCROLL_DOWN,
+        IMAGE_BUTTON_SCROLL_LEFT,
+        IMAGE_BUTTON_SCROLL_RIGHT,
+        IMAGE_BUTTON_PLAY_GAME,
+        IMAGE_BUTTON_PAUSE_GAME,
+        IMAGE_BUTTON_PLAY_MOUSE_OVER,
+        IMAGE_BUTTON_SETTINGS_MOUSE_OVER,
+        IMAGE_BUTTON_RESET_MOUSE_OVER,
+        IMAGE_BUTTON_HELP_MOUSE_OVER,
+        IMAGE_BUTTON_CLOSE_MOUSE_OVER,
+        IMAGE_BUTTON_HOME_MOUSE_OVER,
+        IMAGE_BUTTON_SCROLL_UP_MOUSE_OVER,
+        IMAGE_BUTTON_SCROLL_DOWN_MOUSE_OVER,
+        IMAGE_BUTTON_SCROLL_LEFT_MOUSE_OVER,
+        IMAGE_BUTTON_SCROLL_RIGHT_MOUSE_OVER,
+        IMAGE_BUTTON_PLAY_GAME_MOUSE_OVER,
+        IMAGE_BUTTON_PAUSE_GAME_MOUSE_OVER,
+        IMAGE_BUTTON_START_MOUSE_OVER,
+        IMAGE_BUTTON_LOCATION_COMPLETE,
+        IMAGE_BUTTON_LOCATION_LOCKED,
+        IMAGE_BUTTON_LOCATION_UNLOCKED,
+        
+        IMAGE_BUTTON_STATS,
+        IMAGE_BUTTON_STATS_MOUSE_OVER,
+        IMAGE_BUTTON_TEMP_TILE,
+        IMAGE_BUTTON_TEMP_TILE_MOUSE_OVER,
+        IMAGE_CURSOR_ARROW,
+        IMAGE_DECOR_TIME,      
+        IMAGE_DECOR_MISCASTS,
+        IMAGE_DIALOG_INFO,
+        IMAGE_DIALOG_WIN,
+        IMAGE_DIALOG_FAIL,
+        
+        IMAGE_TILE_BACKGROUND,
+        IMAGE_TILE_BACKGROUND_SELECTED,
+        IMAGE_TILE_BACKGROUND_MOUSE_OVER,
+        IMAGE_WINDOW_ICON,
+        
+        /*SPECIALS IMAGES*/
+        IMAGE_GREENLIGHT_BUTTON,
+        IMAGE_REDLIGHT_BUTTON,
+        IMAGE_TIMEFREEZE_BUTTON,
+        IMAGE_INCSPEED_BUTTON, 
+        IMAGE_DECSPEED_BUTTON, 
+        IMAGE_INCPLAYERSPEED_BUTTON,
+        IMAGE_FLAT_TIRE_BUTTON,
+        IMAGE_EMPTYTANK_BUTTON, 
+        IMAGE_CLOSE_ROAD_BUTTON, 
+        IMAGE_CLOSE_INTERSECTION_BUTTON, 
+        IMAGE_OPEN_INTERSECTION_BUTTON, 
+        IMAGE_STEAL_BUTTON, 
+        IMAGE_MINDCONTROL_BUTTON, 
+        IMAGE_INTANGIBILITY_BUTTON,
+        //MISSING IMAGE ---- IMAGE_MINDLESS_TERROR_BUTTON,
+        IMAGE_FLYING_BUTTON, 
+        IMAGE_INVINCIBILITY_BUTTON,
+        
+        /* CHARACTER SPRITES */
+        IMAGE_PLAYER_SPRITE,
+        IMAGE_POLICE_SPRITE,
+        IMAGE_ZOMBIE_SPRITE,
+        IMAGE_BANDIT_SPRITE,
+        
+        /* GAME TEXT */
+        TEXT_ERROR_LOADING_AUDIO,
+        TEXT_ERROR_LOADING_LEVEL,
+        TEXT_ERROR_LOADING_RECORD,
+        TEXT_ERROR_LOADING_XML_FILE,
+        TEXT_ERROR_SAVING_RECORD,
+        TEXT_LABEL_STATS_ALGORITHM,
+        TEXT_LABEL_STATS_GAMES,
+        TEXT_LABEL_STATS_WINS,
+        TEXT_LABEL_STATS_PERFECT_WINS,
+        TEXT_LABEL_STATS_FASTEST_PERFECT_WIN,
+        TEXT_PROMPT_EXIT,
+        TEXT_TITLE_BAR_GAME,
+        TEXT_TITLE_BAR_ERROR,
+        
+        /* AUDIO CUES */
+        AUDIO_CUE_COLLISION,
+        AUDIO_CUE_FAIL,
+        AUDIO_CUE_WIN,
+        SONG_CUE_GAME_SCREEN,
+        SONG_CUE_MENU_SCREEN,
+        //ADD MORE HERE LATER **********************************************
+        
+        /* TILE LOADING STUFF */
+        LEVEL_OPTIONS,
+        LEVEL_IMAGE_OPTIONS,
+        LEVEL_MOUSE_OVER_IMAGE_OPTIONS        
+    }
+}

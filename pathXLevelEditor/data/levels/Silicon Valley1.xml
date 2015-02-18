@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<level image="Silicon Valley.png" name="Silicon Valley1">
+     <intersections>
+          <intersection id="0" open="true" x="97" y="225"/>
+          <intersection id="0" open="true" x="828" y="225"/>
+          <intersection id="0" open="false" x="237" y="55"/>
+          <intersection id="0" open="false" x="225" y="443"/>
+          <intersection id="0" open="true" x="441" y="451"/>
+          <intersection id="0" open="true" x="446" y="47"/>
+          <intersection id="0" open="true" x="697" y="54"/>
+          <intersection id="0" open="true" x="689" y="454"/>
+          <intersection id="0" open="true" x="232" y="230"/>
+          <intersection id="0" open="false" x="451" y="229"/>
+          <intersection id="0" open="true" x="699" y="224"/>
+     </intersections>
+     <roads>
+          <road int_id1="2" int_id2="8" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="3" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="0" one_way="false" speed_limit="30"/>
+          <road int_id1="3" int_id2="9" one_way="false" speed_limit="30"/>
+          <road int_id1="9" int_id2="7" one_way="false" speed_limit="30"/>
+          <road int_id1="7" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="10" int_id2="6" one_way="false" speed_limit="30"/>
+          <road int_id1="6" int_id2="5" one_way="false" speed_limit="30"/>
+          <road int_id1="5" int_id2="2" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="9" one_way="true" speed_limit="30"/>
+          <road int_id1="9" int_id2="5" one_way="false" speed_limit="30"/>
+          <road int_id1="9" int_id2="10" one_way="false" speed_limit="30"/>
+          <road int_id1="3" int_id2="4" one_way="false" speed_limit="30"/>
+          <road int_id1="4" int_id2="7" one_way="false" speed_limit="30"/>
+          <road int_id1="8" int_id2="4" one_way="false" speed_limit="10"/>
+          <road int_id1="4" int_id2="10" one_way="false" speed_limit="10"/>
+          <road int_id1="10" int_id2="5" one_way="false" speed_limit="10"/>
+          <road int_id1="5" int_id2="8" one_way="false" speed_limit="10"/>
+          <road int_id1="2" int_id2="9" one_way="false" speed_limit="30"/>
+          <road int_id1="9" int_id2="6" one_way="false" speed_limit="30"/>
+          <road int_id1="10" int_id2="1" one_way="false" speed_limit="30"/>
+          <road int_id1="6" int_id2="1" one_way="false" speed_limit="30"/>
+          <road int_id1="7" int_id2="1" one_way="false" speed_limit="30"/>
+          <road int_id1="3" int_id2="0" one_way="false" speed_limit="30"/>
+          <road int_id1="2" int_id2="0" one_way="false" speed_limit="30"/>
+     </roads>
+     <start_intersection id="0" image="DefaultStartLocation.png"/>
+     <destination_intersection id="1" image="DefaultDestination.png"/>
+     <money amount="160"/>
+     <police num="2"/>
+     <bandits num="1"/>
+     <zombies num="1"/>
+</level>
